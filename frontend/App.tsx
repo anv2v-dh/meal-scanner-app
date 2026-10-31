@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import * as FileSystem from 'expo-file-system';
 
 export default function App() {
   const [image, setImage] = useState<string | null>(null);
@@ -12,7 +11,7 @@ export default function App() {
   // 1. Pick an image from the gallery
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       allowsEditing: true,
       quality: 0.5, // Lower quality = smaller Base64 string = faster upload
       base64: true, // We need the Base64 string!
