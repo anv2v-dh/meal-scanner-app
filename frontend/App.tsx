@@ -2,19 +2,41 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
+// This is the main entry point of the app. 
+// Everything the user sees starts here.
 export default function App() {
+  
+  // --- STATE (The App's Memory) ---
+  // We use useState to remember things between screen reloads.
+  
+  // Holds the URI of the image the user picked (starts as null/empty)
   const [image, setImage] = useState<string | null>(null);
+  
+  // Holds the JSON response from the AI (calories, macros). 'any' because the shape comes from the backend.
   const [result, setResult] = useState<any>(null);
+  
+  // A simple true/false switch to show the loading spinner while the backend is thinking.
   const [loading, setLoading] = useState(false);
+  
+  // Holds an error message if the API request fails.
   const [error, setError] = useState<string | null>(null);
 
-  // 1. Pick an image from the gallery
+  // --- ACTIONS ---
+  
+  // This function opens the phone's photo gallery.
   const pickImage = async () => {
+    // We use the Expo ImagePicker to open the gallery.
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      quality: 0.5, // Lower quality = smaller Base64 string = faster upload
-      base64: true, // We need the Base64 string!
+      mediaTypes: ['images'], // Only let the user pick images
+      allowsEditing: true,    // Let them crop it before uploading
+      
+      // Compressing the image to save bandwidth. 
+      // Smaller image = smaller Base64 string = faster upload to our backend.
+      quality: 0.5, 
+      
+      // THIS IS THE MAGIC. It tells the library to convert the image into a massive text string (Base64).
+      // Our backend needs this because we can't send raw image files through a standard JSON API.
+      base64: true, 
     });
 
     if (!result.canceled && result.assets[0].base64) {
